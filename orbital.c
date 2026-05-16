@@ -31,7 +31,7 @@ int main(){
     
     double dt = 3600; // one hour
 
-    for(int i=0;i<24;i++){
+    for(int i=0;i<8760;i++){
         double dx = sun.x - earth.x;
         double dy = sun.y  - earth.y;
         double dist =  sqrt(dx*dx + dy*dy);
@@ -39,7 +39,9 @@ int main(){
         double fx = force*(dx/dist);
         double fy = force*(dy/dist);
         update(&earth,fx,fy,dt);
-        printf("Hour %2d: position: (%.3e, %.3e)\n",i+1,earth.x,earth.y);
+        if(i%720==0){
+            printf("Hour %2d: position: (%.3e, %.3e)\n",i+1,earth.x,earth.y);
+        }
     }
     return 0;
 }
