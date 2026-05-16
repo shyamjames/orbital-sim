@@ -16,12 +16,30 @@ double gravitational_force(struct Body a, struct Body b){
     return G * (a.mass * b.mass)/(distance*distance);
 }
 
+void update(struct Body *b, double fx, double fy, double dt){
+    double ax = fx/b->mass; // acceleration = force/mass (f=ma)
+    double ay = fy/b->mass; // so calculation acceletation towards both directions
+    b->vx += ax*dt; // new velocity = acceleration * time
+    b->vy += ay*dt;
+    b->x += b->vx*dt; // new position = updated acceleration * time
+    b->y += b->vy*dt;
+}
+
 int main(){
     struct Body sun = {"Sun",1.989e30,0,0,0,0};
     struct Body earth = {"Earth", 5.972e24, 0, 1.496e11, 29780, 0};
-    printf("%s\nMass: %.3e\nPosition: (%.3e,%.3e)\n", earth.name, earth.mass, earth.x, earth.y);
-    // %.3e used to print floating point number in scientific notation.
-    double force = gravitational_force(earth,sun);
-    printf("Gravitational Force: %.3e N\n",force);
+    
+    double dt = 3600; // one hour
+
+    for(int i=0;i<24;i++){
+        double dx = sun.x - earth.x;
+        double dy = sun.y  - earth.y;
+        double dist =  sqrt(dx*dx + dy*dy);
+        double force = gravitational_force(earth,sun);
+        double fx = force*(dx/dist);
+        double fy = force*(dy/dist);
+        update(&earth,fx,fy,dt);
+        printf("Hour %2d: position: (%.3e, %.3e)\n",i+1,earth.x,earth.y);
+    }
     return 0;
 }
