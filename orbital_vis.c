@@ -78,6 +78,12 @@ int main(){
         SDL_SetRenderDrawColor(renderer,0,0,0,255);
         SDL_RenderClear(renderer);
 
+        SDL_SetRenderDrawColor(renderer,30,30,30,255);
+        for(int i=0;i<=WIDTH;i+=WIDTH/10)
+            SDL_RenderDrawLine(renderer,i,0,i,HEIGHT);
+        for(int j=0;j<=HEIGHT;j+=HEIGHT/10)
+            SDL_RenderDrawLine(renderer,0,j,WIDTH,j);
+
         SDL_SetRenderDrawColor(renderer,255,255,0,255);
         draw_circle(renderer, screen_x(sun.x),screen_y(sun.y),10);
 
