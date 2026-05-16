@@ -65,6 +65,7 @@ int main(){
 
     struct Body sun = {"Sun",1.989e30,0,0,0,0};
     struct Body earth = {"Earth", 5.972e24, 0, 1.496e11, 29780, 0};
+    struct Body mars = {"Mars",6.39e23,0,2.279e11,24130,0};
 
     double dt = 3600;
     int running = 1;
@@ -77,7 +78,7 @@ int main(){
             if(event.type==SDL_QUIT) running = 0;
         }
 
-        //physics
+        //physics earth
         double dx = sun.x - earth.x; 
         double dy = sun.y  - earth.y;
         double dist =  sqrt(dx*dx + dy*dy); // actual distance
@@ -86,10 +87,19 @@ int main(){
         double fy = force*(dy/dist); // force in y dir
         update(&earth,fx,fy,dt+speed);
 
-        trail[trail_index] = (Point){earth.x, earth.y};
+        trail[trail_index] = (Point){earth.x,earth.y};
         trail_index = (trail_index+1)%TRAIL_LENGTH;
         if(trail_count < TRAIL_LENGTH) trail_count++;
 
+
+        //physics mars
+        double mdx = sun.x - mars.x;
+        double mdy = sun.y - mars.y;
+        double mdist = sqrt(mdx*mdx+mdy*mdy);
+        double mforce = gravitational_force(mars,sun);
+        double mfx = mforce*(mdx/mdist);
+        double mfy = mforce*(mdy/mdist);
+        update(&mars,mfx,mfy,dt+speed);
 
         //draw
         SDL_SetRenderDrawColor(renderer,0,0,0,255);
@@ -117,10 +127,22 @@ int main(){
         SDL_SetRenderDrawColor(renderer,0,10,255,255);
         int earth_r = (int)(4*5e9/scale_changing)+2;
         draw_circle(renderer, screen_x(earth.x),screen_y(earth.y),earth_r);
+        
+        // //draw mars trail
+        // SDL_SetRenderDrawColor(renderer,188,74,40,255);
+        // for(int i=0;i<trail_count;i++){
+        //     SDL_RenderDrawPoint(renderer, screen_x(trail[i].x), screen_y(trail[i].y));
+        // }
+
+        //draw mars
+        SDL_SetRenderDrawColor(renderer,188,74,40,255);
+        int mars_r = (int)(4*5e9/scale_changing)+2;
+        draw_circle(renderer, screen_x(mars.x),screen_y(mars.y),mars_r);
+
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16); //~60fps
-        
+
         if(event.type == SDL_KEYDOWN){
             if(event.key.keysym.sym==SDLK_UP){
                 speed++;
