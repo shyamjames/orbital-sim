@@ -1,0 +1,19 @@
+# Ignore compiled C files and common build artifacts
+# Object files
+*.o
+
+# Common executable names
+a.out
+*.out
+*.exe
+
+# Debug and core dumps
+core
+
+# IDE/build folders
+build/
+bin/
+
+# Backup files
+*~
+
