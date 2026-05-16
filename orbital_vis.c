@@ -1,3 +1,8 @@
+// TODO:
+// 1. Understand Trail Logic
+// 2. Add Mars trail
+// 3. Add Moon
+
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <math.h>
