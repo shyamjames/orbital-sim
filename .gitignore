@@ -17,3 +17,6 @@ bin/
 # Backup files
 *~
 
+# Ignore root compiled executable (no extension)
+/orbital
+
