@@ -67,6 +67,7 @@ int main(){
 
     double dt = 3600;
     int running = 1;
+    int speed = 1;
     SDL_Event event;
 
     while(running){
@@ -82,7 +83,7 @@ int main(){
         double force = gravitational_force(earth,sun);
         double fx = force*(dx/dist); // force in x dir
         double fy = force*(dy/dist); // force in y dir
-        update(&earth,fx,fy,dt);
+        update(&earth,fx,fy,dt+speed);
 
         trail[trail_index] = (Point){screen_x(earth.x),screen_y(earth.y)};
         trail_index = (trail_index+1)%TRAIL_LENGTH;
@@ -116,6 +117,14 @@ int main(){
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16); //~60fps
+        
+        if(event.type == SDL_KEYDOWN){
+            if(event.key.keysym.sym==SDLK_UP){
+                speed++;
+            }else if(event.key.keysym.sym==SDLK_DOWN){
+                speed--;
+            }
+        }
     }
 
     SDL_DestroyRenderer(renderer);
