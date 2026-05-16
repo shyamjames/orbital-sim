@@ -34,8 +34,9 @@ void update(struct Body *b, double fx, double fy, double dt){
     b->y += b->vy*dt;
 }
 
-int screen_x(double x) { return CENTER_X + (int)(x / SCALE); }
-int screen_y(double y) { return CENTER_Y - (int)(y / SCALE); }
+float scale_changing = SCALE;
+int screen_x(double x) { return CENTER_X + (int)(x / scale_changing); }
+int screen_y(double y) { return CENTER_Y - (int)(y / scale_changing); }
 
 void draw_circle(SDL_Renderer *r, int cx, int cy, int radius){
     for(int dy=-radius;dy<=radius;dy++){
@@ -48,7 +49,7 @@ void draw_circle(SDL_Renderer *r, int cx, int cy, int radius){
 }
 
 typedef struct{
-    int x,y;
+    double x,y;
 } Point;
 
 Point trail[TRAIL_LENGTH];
@@ -85,7 +86,7 @@ int main(){
         double fy = force*(dy/dist); // force in y dir
         update(&earth,fx,fy,dt+speed);
 
-        trail[trail_index] = (Point){screen_x(earth.x),screen_y(earth.y)};
+        trail[trail_index] = (Point){earth.x, earth.y};
         trail_index = (trail_index+1)%TRAIL_LENGTH;
         if(trail_count < TRAIL_LENGTH) trail_count++;
 
@@ -103,17 +104,19 @@ int main(){
 
         //draw sun
         SDL_SetRenderDrawColor(renderer,255,255,0,255);
-        draw_circle(renderer, screen_x(sun.x),screen_y(sun.y),10);
+        int sun_r = (int)(4*10e9/scale_changing)+2;
+        draw_circle(renderer, screen_x(sun.x),screen_y(sun.y),sun_r);
 
         //draw earth trail
         SDL_SetRenderDrawColor(renderer,0,50,150,255);
         for(int i=0;i<trail_count;i++){
-            SDL_RenderDrawPoint(renderer, trail[i].x,trail[i].y);
+            SDL_RenderDrawPoint(renderer, screen_x(trail[i].x), screen_y(trail[i].y));
         }
 
         //draw earth
         SDL_SetRenderDrawColor(renderer,0,10,255,255);
-        draw_circle(renderer, screen_x(earth.x),screen_y(earth.y),4);
+        int earth_r = (int)(4*5e9/scale_changing)+2;
+        draw_circle(renderer, screen_x(earth.x),screen_y(earth.y),earth_r);
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16); //~60fps
@@ -123,6 +126,14 @@ int main(){
                 speed++;
             }else if(event.key.keysym.sym==SDLK_DOWN){
                 speed--;
+            }
+        }
+
+        if(event.type == SDL_MOUSEWHEEL){
+            if(event.wheel.y > 0){
+                scale_changing/=1.01;
+            }else if(event.wheel.y<0){
+                scale_changing*=1.01;
             }
         }
     }
