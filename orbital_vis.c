@@ -7,6 +7,7 @@
 #define HEIGHT 800
 #define CENTER_X 400
 #define CENTER_Y 400
+#define TRAIL_LENGTH 2000
 
 
 struct Body{
@@ -46,6 +47,14 @@ void draw_circle(SDL_Renderer *r, int cx, int cy, int radius){
     }
 }
 
+typedef struct{
+    int x,y;
+} Point;
+
+Point trail[TRAIL_LENGTH];
+int trail_index = 0;
+int trail_count = 0;
+
 int main(){
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window *window = SDL_CreateWindow("Orbital Sim",
@@ -75,18 +84,33 @@ int main(){
         double fy = force*(dy/dist); // force in y dir
         update(&earth,fx,fy,dt);
 
+        trail[trail_index] = (Point){screen_x(earth.x),screen_y(earth.y)};
+        trail_index = (trail_index+1)%TRAIL_LENGTH;
+        if(trail_count < TRAIL_LENGTH) trail_count++;
+
+
+        //draw
         SDL_SetRenderDrawColor(renderer,0,0,0,255);
         SDL_RenderClear(renderer);
 
+        //draw grid
         SDL_SetRenderDrawColor(renderer,30,30,30,255);
         for(int i=0;i<=WIDTH;i+=WIDTH/10)
             SDL_RenderDrawLine(renderer,i,0,i,HEIGHT);
         for(int j=0;j<=HEIGHT;j+=HEIGHT/10)
             SDL_RenderDrawLine(renderer,0,j,WIDTH,j);
 
+        //draw sun
         SDL_SetRenderDrawColor(renderer,255,255,0,255);
         draw_circle(renderer, screen_x(sun.x),screen_y(sun.y),10);
 
+        //draw earth trail
+        SDL_SetRenderDrawColor(renderer,0,50,150,255);
+        for(int i=0;i<trail_count;i++){
+            SDL_RenderDrawPoint(renderer, trail[i].x,trail[i].y);
+        }
+
+        //draw earth
         SDL_SetRenderDrawColor(renderer,0,10,255,255);
         draw_circle(renderer, screen_x(earth.x),screen_y(earth.y),4);
 
