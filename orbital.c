@@ -28,9 +28,9 @@ void update(struct Body *b, double fx, double fy, double dt){
 int main(){
     struct Body sun = {"Sun",1.989e30,0,0,0,0};
     struct Body earth = {"Earth", 5.972e24, 0, 1.496e11, 29780, 0};
-    struct Body moon = {"Moon", 7.342e22, 0, 1.496e11+3.944e8, 29780+1022, 0};
+    struct Body moon = {"Moon", 7.342e22, earth.x+3.944e8, earth.y, earth.vx, earth.vy+1022};
 
-    double dt = 3600; // one hour
+    double dt = 1800; // time in seconds
 
     for(int i=0;i<8760;i++){
         //force on earth from sun
